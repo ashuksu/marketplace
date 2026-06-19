@@ -1,0 +1,32 @@
+# Package managers
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build output
+.next/
+dist/
+build/
+out/
+
+# Dependencies
+node_modules/
+
+# Generated
+*.min.js
+*.min.css
+next-env.d.ts
+.turbo/
+
+# Coverage / cache
+coverage/
+.cache/
+
+# Env
+.env*
+!.env.example
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
