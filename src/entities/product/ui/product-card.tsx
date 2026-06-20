@@ -11,9 +11,12 @@ type ProductCardProps = {
 export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="overflow-hidden">
-      <div className="bg-muted flex aspect-square items-center justify-center">
+      <Link
+        href={`/products/${product.id}`}
+        className="bg-muted flex aspect-square items-center justify-center"
+      >
         <span className="text-muted-foreground text-sm">Product image</span>
-      </div>
+      </Link>
 
       <CardContent className="space-y-3 p-4">
         <div className="flex items-start justify-between gap-4">
