@@ -42,43 +42,43 @@ Two goals:
 1. Log in as buyer in one window and as seller in another (one-click demo accounts).
 2. Seller changes stock → the buyer's stock badge updates without refresh.
 3. Buyer writes a message → seller sees typing indicator and unread count, replies.
-4. Buyer checks out → seller moves the order to *Shipped* → buyer gets a toast and a live status change.
-5. Buyer asks the assistant: *"Headphones under $200 with good noise cancellation"* → streamed answer with product cards.
+4. Buyer checks out → seller moves the order to _Shipped_ → buyer gets a toast and a live status change.
+5. Buyer asks the assistant: _"Headphones under $200 with good noise cancellation"_ → streamed answer with product cards.
 6. Buyer rotates and zooms the product in 3D.
 
 The server includes a **seller bot** (auto-replies, occasional stock changes) so realtime features can be demoed with a single browser window.
 
 ### Pages
 
-| Route | Role | Notes |
-|---|---|---|
-| `/` | all | Home, featured products |
-| `/products` | all | Catalog: search, filters, sort, server pagination, virtualized list |
-| `/products/[id]` | all | Server-rendered shell (metadata/SEO) + client islands: gallery, 3D viewer, live stock, reviews, "message seller" |
-| `/cart`, `/checkout` | buyer | Cart summary, checkout form |
-| `/orders`, `/orders/[id]` | buyer | Order list and live status timeline |
-| `/messages`, `/messages/[id]` | buyer, seller | Conversations (seller + AI assistant), chat |
-| `/profile` | auth | Profile form |
-| `/login`, `/register` | guest | Auth forms |
-| `/seller` | seller | Dashboard: orders, low stock |
-| `/seller/products`, `/seller/products/[id]` | seller | Product management and create/edit form |
-| `/seller/legacy` | seller | Legacy class-based inventory table (see [Legacy React](#legacy-react-area)) |
+| Route                                       | Role          | Notes                                                                                                            |
+| ------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `/`                                         | all           | Home, featured products                                                                                          |
+| `/products`                                 | all           | Catalog: search, filters, sort, server pagination, virtualized list                                              |
+| `/products/[id]`                            | all           | Server-rendered shell (metadata/SEO) + client islands: gallery, 3D viewer, live stock, reviews, "message seller" |
+| `/cart`, `/checkout`                        | buyer         | Cart summary, checkout form                                                                                      |
+| `/orders`, `/orders/[id]`                   | buyer         | Order list and live status timeline                                                                              |
+| `/messages`, `/messages/[id]`               | buyer, seller | Conversations (seller + AI assistant), chat                                                                      |
+| `/profile`                                  | auth          | Profile form                                                                                                     |
+| `/login`, `/register`                       | guest         | Auth forms                                                                                                       |
+| `/seller`                                   | seller        | Dashboard: orders, low stock                                                                                     |
+| `/seller/products`, `/seller/products/[id]` | seller        | Product management and create/edit form                                                                          |
+| `/seller/legacy`                            | seller        | Legacy class-based inventory table (see [Legacy React](#legacy-react-area))                                      |
 
 The AI assistant is also reachable as a floating panel from any page.
 
 ### Core entities
 
-| Entity | Key fields |
-|---|---|
-| User | id, name, email, role (`buyer` \| `seller`) |
-| Category | id, name |
-| Product | id, sellerId, categoryId, title, description, price, stock, images, rating, `model3d?`, tags |
-| CartItem | productId, quantity |
-| Order | id, buyerId, sellerId, items, total, status: `pending → confirmed → shipped → delivered` (+ `cancelled`); checkout creates one order per seller |
-| Conversation | id, participants, type (`seller` \| `assistant`), lastMessage, unreadCount |
-| Message | id, conversationId, senderId / role, text, parts (text, product cards), status, createdAt |
-| Notification | id, type, text, read, createdAt |
-| Review | id, productId, userId, rating (1–5), text |
+| Entity       | Key fields                                                                                                                                      |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| User         | id, name, email, role (`buyer` \| `seller`)                                                                                                     |
+| Category     | id, name                                                                                                                                        |
+| Product      | id, sellerId, categoryId, title, description, price, stock, images, rating, `model3d?`, tags                                                    |
+| CartItem     | productId, quantity                                                                                                                             |
+| Order        | id, buyerId, sellerId, items, total, status: `pending → confirmed → shipped → delivered` (+ `cancelled`); checkout creates one order per seller |
+| Conversation | id, participants, type (`seller` \| `assistant`), lastMessage, unreadCount                                                                      |
+| Message      | id, conversationId, senderId / role, text, parts (text, product cards), status, createdAt                                                       |
+| Notification | id, type, text, read, createdAt                                                                                                                 |
+| Review       | id, productId, userId, rating (1–5), text                                                                                                       |
 
 ---
 
@@ -138,27 +138,27 @@ Rules:
 
 ## Technology map
 
-| Technology | Where it is used | Talking point | Role* |
-|---|---|---|---|
-| Next.js (App Router) | Routing, product page SSR, metadata, Route Handler for the assistant | Server vs client boundary, what is deliberately client-side | B |
-| React 19, function components | Whole app | Hooks, composition, `useTransition`/`useDeferredValue` for search | A, B |
-| TypeScript (strict) | Everywhere, shared contracts, discriminated union for WS events | Types as the FE↔BE contract | A, B |
-| Redux Toolkit | Auth session, cart, notifications | Cross-cutting client state, `createEntityAdapter`, listener middleware | A |
-| RTK Query | Products, orders, users, conversations, messages, reviews, seller resources | Server-state cache, optimistic updates, cache patched by realtime events | A |
-| Zustand | Filter drafts, mobile menu, chat panel, presence/typing, 3D viewer settings | Ephemeral UI state, selective subscriptions | A, B |
-| RxJS | Socket lifecycle, event stream, debounce/throttle/batching | Streams for time-based logic | A |
-| WebSocket (`ws`) | Chat, presence, order status, stock, notifications | Reconnect, heartbeat, connection status | A, B |
-| REST (Node) | Products, categories, users, cart, orders, conversations, messages, notifications, reviews, seller routes | Resource design, pagination, error contract | A |
-| React Hook Form + Zod | Login, register, product, checkout, profile, review forms | Shared schemas client/server | A, B |
-| Tailwind CSS | Main application UI | Design tokens, responsive layout | B |
-| Radix UI | Dialog, DropdownMenu, Select, Tooltip, Tabs, Toast | Accessible primitives | B |
-| SASS | Legacy seller area (SCSS modules, variables, mixins) | Where preprocessors still make sense | A |
-| Styled Components | Assistant widget (client-only) | CSS-in-JS trade-offs (runtime cost, SSR) | A |
-| Three.js via React Three Fiber | Product 3D viewer | WebGL from React, lazy loading | B |
-| Class components | Legacy seller area + error boundary | Lifecycle, `PureComponent`, why boundaries are still classes | A |
-| Jest, RTL, MSW, Enzyme, Playwright | See [Testing](#testing) | Test pyramid, what belongs where | A, B |
-| React Native (Expo) | Mini-client | Sharing contracts with web | A |
-| Node.js | REST API + WebSocket server | Small, deliberately simple backend | A |
+| Technology                         | Where it is used                                                                                          | Talking point                                                            | Role* |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----- |
+| Next.js (App Router)               | Routing, product page SSR, metadata, Route Handler for the assistant                                      | Server vs client boundary, what is deliberately client-side              | B     |
+| React 19, function components      | Whole app                                                                                                 | Hooks, composition, `useTransition`/`useDeferredValue` for search        | A, B  |
+| TypeScript (strict)                | Everywhere, shared contracts, discriminated union for WS events                                           | Types as the FE↔BE contract                                              | A, B  |
+| Redux Toolkit                      | Auth session, cart, notifications                                                                         | Cross-cutting client state, `createEntityAdapter`, listener middleware   | A     |
+| RTK Query                          | Products, orders, users, conversations, messages, reviews, seller resources                               | Server-state cache, optimistic updates, cache patched by realtime events | A     |
+| Zustand                            | Filter drafts, mobile menu, chat panel, presence/typing, 3D viewer settings                               | Ephemeral UI state, selective subscriptions                              | A, B  |
+| RxJS                               | Socket lifecycle, event stream, debounce/throttle/batching                                                | Streams for time-based logic                                             | A     |
+| WebSocket (`ws`)                   | Chat, presence, order status, stock, notifications                                                        | Reconnect, heartbeat, connection status                                  | A, B  |
+| REST (Node)                        | Products, categories, users, cart, orders, conversations, messages, notifications, reviews, seller routes | Resource design, pagination, error contract                              | A     |
+| React Hook Form + Zod              | Login, register, product, checkout, profile, review forms                                                 | Shared schemas client/server                                             | A, B  |
+| Tailwind CSS                       | Main application UI                                                                                       | Design tokens, responsive layout                                         | B     |
+| Radix UI                           | Dialog, DropdownMenu, Select, Tooltip, Tabs, Toast                                                        | Accessible primitives                                                    | B     |
+| SASS                               | Legacy seller area (SCSS modules, variables, mixins)                                                      | Where preprocessors still make sense                                     | A     |
+| Styled Components                  | Assistant widget (client-only)                                                                            | CSS-in-JS trade-offs (runtime cost, SSR)                                 | A     |
+| Three.js via React Three Fiber     | Product 3D viewer                                                                                         | WebGL from React, lazy loading                                           | B     |
+| Class components                   | Legacy seller area + error boundary                                                                       | Lifecycle, `PureComponent`, why boundaries are still classes             | A     |
+| Jest, RTL, MSW, Enzyme, Playwright | See [Testing](#testing)                                                                                   | Test pyramid, what belongs where                                         | A, B  |
+| React Native (Expo)                | Mini-client                                                                                               | Sharing contracts with web                                               | A     |
+| Node.js                            | REST API + WebSocket server                                                                               | Small, deliberately simple backend                                       | A     |
 
 \* **A** = Senior React role (realtime product, mobile). **B** = product-focused Frontend role (React/Next.js, realtime, 3D, AI).
 
@@ -170,27 +170,27 @@ Rules:
 
 Small JSON API with server-side pagination and one error shape (validated by shared Zod schemas).
 
-| Area | Endpoints |
-|---|---|
-| Catalog | `/products`, `/products/:id`, `/categories` |
-| Users/auth | `/auth/login`, `/auth/register`, `/auth/logout`, `/users/me` |
-| Buying | `/cart`, `/orders` |
-| Communication | `/conversations`, `/messages`, `/notifications` |
-| Reviews | `/products/:id/reviews`, `/reviews` |
-| Seller | `/seller/products`, `/seller/orders` |
+| Area          | Endpoints                                                    |
+| ------------- | ------------------------------------------------------------ |
+| Catalog       | `/products`, `/products/:id`, `/categories`                  |
+| Users/auth    | `/auth/login`, `/auth/register`, `/auth/logout`, `/users/me` |
+| Buying        | `/cart`, `/orders`                                           |
+| Communication | `/conversations`, `/messages`, `/notifications`              |
+| Reviews       | `/products/:id/reviews`, `/reviews`                          |
+| Seller        | `/seller/products`, `/seller/orders`                         |
 
 ### WebSocket events
 
-| Event | Direction | Effect |
-|---|---|---|
-| `MESSAGE_SEND` | client → server | Send a chat message |
-| `TYPING` | client → server | Throttled typing signal |
-| `MESSAGE_RECEIVED` | server → client | Append to messages cache, unread +1, notification |
-| `TYPING_UPDATED` | server → client | Typing indicator |
-| `USER_ONLINE` / `USER_OFFLINE` | server → client | Presence dot in conversation list |
-| `ORDER_UPDATED` | server → client | Patch orders cache, toast |
-| `STOCK_UPDATED` | server → client | Patch product cache, live stock badge |
-| `NOTIFICATION_RECEIVED` | server → client | Notification list + toast |
+| Event                          | Direction       | Effect                                            |
+| ------------------------------ | --------------- | ------------------------------------------------- |
+| `MESSAGE_SEND`                 | client → server | Send a chat message                               |
+| `TYPING`                       | client → server | Throttled typing signal                           |
+| `MESSAGE_RECEIVED`             | server → client | Append to messages cache, unread +1, notification |
+| `TYPING_UPDATED`               | server → client | Typing indicator                                  |
+| `USER_ONLINE` / `USER_OFFLINE` | server → client | Presence dot in conversation list                 |
+| `ORDER_UPDATED`                | server → client | Patch orders cache, toast                         |
+| `STOCK_UPDATED`                | server → client | Patch product cache, live stock badge             |
+| `NOTIFICATION_RECEIVED`        | server → client | Notification list + toast                         |
 
 ### Client pipeline
 
@@ -209,13 +209,13 @@ Connection status (`connecting | open | reconnecting | closed`) is visible in th
 
 ## State management
 
-| Tool | Owns | Rule of thumb |
-|---|---|---|
-| **RTK Query** | Server-owned data (products, orders, conversations, messages, reviews, seller resources) | If the server owns it, it lives here; realtime events patch its cache |
-| **Redux Toolkit** | Auth session, cart (persisted, synced to `/cart` through listener middleware), notifications | Cross-page client state |
-| **Zustand** | Draft filter values, mobile menu, chat panel state, presence/typing, 3D viewer settings | Ephemeral UI state, no persistence |
-| **RxJS** | Socket lifecycle, event stream, debounce/throttle/batching | Time-based streams |
-| **URL** | Committed catalog filters, sort, page | Shareable and SSR-friendly; Zustand holds only the draft/UI state around it |
+| Tool              | Owns                                                                                         | Rule of thumb                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **RTK Query**     | Server-owned data (products, orders, conversations, messages, reviews, seller resources)     | If the server owns it, it lives here; realtime events patch its cache       |
+| **Redux Toolkit** | Auth session, cart (persisted, synced to `/cart` through listener middleware), notifications | Cross-page client state                                                     |
+| **Zustand**       | Draft filter values, mobile menu, chat panel state, presence/typing, 3D viewer settings      | Ephemeral UI state, no persistence                                          |
+| **RxJS**          | Socket lifecycle, event stream, debounce/throttle/batching                                   | Time-based streams                                                          |
+| **URL**           | Committed catalog filters, sort, page                                                        | Shareable and SSR-friendly; Zustand holds only the draft/UI state around it |
 
 ---
 
@@ -223,13 +223,13 @@ Connection status (`connecting | open | reconnecting | closed`) is visible in th
 
 React Hook Form + Zod, schemas shared with the server, server errors mapped back to fields, pending and error states everywhere.
 
-| Form | Validation highlights |
-|---|---|
-| Login / Register | Email format, password rules, confirm password |
-| Product create/edit (seller) | Price > 0, integer stock, required title, image URLs |
-| Checkout | Address, delivery option, "pay on delivery" (no real payments) |
-| Profile | Optional fields, dirty-state handling |
-| Review | Rating 1–5, minimum text length, one review per product |
+| Form                         | Validation highlights                                          |
+| ---------------------------- | -------------------------------------------------------------- |
+| Login / Register             | Email format, password rules, confirm password                 |
+| Product create/edit (seller) | Price > 0, integer stock, required title, image URLs           |
+| Checkout                     | Address, delivery option, "pay on delivery" (no real payments) |
+| Profile                      | Optional fields, dirty-state handling                          |
+| Review                       | Rating 1–5, minimum text length, one review per product        |
 
 ---
 
@@ -243,16 +243,16 @@ Demo-grade JWT issued by the Node API: web keeps it in an httpOnly cookie, mobil
 
 Seed data is deliberately large: **~2,000 products** and a conversation with **~5,000 messages**, so techniques have something to prove.
 
-| Technique | Where | How it is shown |
-|---|---|---|
-| Data normalization | `createEntityAdapter` for products, messages, notifications | Cache patches by id, no list scanning |
-| Memoized selectors | Cart totals, filtered/sorted lists (`createSelector`) | Unit-tested selectors |
-| `React.memo`, `useCallback`, `useMemo` | `ProductCard`, list callbacks, derived data | Profiler before/after in `docs/performance.md` |
-| Component composition | Chat input owns its own state; message list does not re-render while typing | Profiler evidence |
-| Virtualization | Catalog list, message list | 2k items, constant DOM size |
-| Concurrent UI | `useTransition` / `useDeferredValue` for search | Input stays responsive |
-| Batching realtime updates | RxJS `bufferTime` for `STOCK_UPDATED` | One render per window, not per event |
-| Code splitting, lazy loading | `next/dynamic` for 3D viewer, chat panel, seller area; `next/image` | Bundle/network comparison |
+| Technique                              | Where                                                                       | How it is shown                                |
+| -------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------- |
+| Data normalization                     | `createEntityAdapter` for products, messages, notifications                 | Cache patches by id, no list scanning          |
+| Memoized selectors                     | Cart totals, filtered/sorted lists (`createSelector`)                       | Unit-tested selectors                          |
+| `React.memo`, `useCallback`, `useMemo` | `ProductCard`, list callbacks, derived data                                 | Profiler before/after in `docs/performance.md` |
+| Component composition                  | Chat input owns its own state; message list does not re-render while typing | Profiler evidence                              |
+| Virtualization                         | Catalog list, message list                                                  | 2k items, constant DOM size                    |
+| Concurrent UI                          | `useTransition` / `useDeferredValue` for search                             | Input stays responsive                         |
+| Batching realtime updates              | RxJS `bufferTime` for `STOCK_UPDATED`                                       | One render per window, not per event           |
+| Code splitting, lazy loading           | `next/dynamic` for 3D viewer, chat panel, seller area; `next/image`         | Bundle/network comparison                      |
 
 Not everything is memoized: only what the Profiler shows as a real problem is documented and fixed.
 
@@ -308,13 +308,13 @@ Expo app in `apps/mobile`, deliberately small, using the same backend:
 
 Tests are written per stage, not at the end. Jest runs as three projects: `unit`, `dom` (RTL) and `legacy` (Enzyme), so adapter setup never leaks.
 
-| Level | Tools | Targets |
-|---|---|---|
-| Unit | Jest | Validation schemas, selectors, slices, utilities, RxJS pipelines (marble tests with `TestScheduler`) |
-| Component | Jest + RTL | `ProductCard`, `ProductList`, `LoginForm`, `CheckoutForm`, `Cart`, `ChatInput` |
-| Integration | RTL + MSW | Catalog → cart → checkout with mocked API; chat with a fake socket |
-| Legacy | Jest + Enzyme | `ProductRow`, `StockBadge`, `ProductTable` (shallow, mount, lifecycle) |
-| E2E | Playwright | Login → browse → product → cart → checkout; **realtime flow with two browser contexts** (seller updates order, buyer sees it live) |
+| Level       | Tools         | Targets                                                                                                                            |
+| ----------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Unit        | Jest          | Validation schemas, selectors, slices, utilities, RxJS pipelines (marble tests with `TestScheduler`)                               |
+| Component   | Jest + RTL    | `ProductCard`, `ProductList`, `LoginForm`, `CheckoutForm`, `Cart`, `ChatInput`                                                     |
+| Integration | RTL + MSW     | Catalog → cart → checkout with mocked API; chat with a fake socket                                                                 |
+| Legacy      | Jest + Enzyme | `ProductRow`, `StockBadge`, `ProductTable` (shallow, mount, lifecycle)                                                             |
+| E2E         | Playwright    | Login → browse → product → cart → checkout; **realtime flow with two browser contexts** (seller updates order, buyer sees it live) |
 
 Representative coverage, not a coverage percentage.
 
@@ -333,20 +333,20 @@ Representative coverage, not a coverage percentage.
 
 Each stage ends with a working app, tests for the new code, and a merged PR. Estimates include debugging.
 
-| # | Stage | Delivers | Est. | Priority |
-|---|---|---|---|---|
-| 1 | Foundation | Monorepo, Next.js + Tailwind + Radix, shared package, Node server with seed data, Gitflow | 1.5 h | Must |
-| 2 | Catalog and product page | Server-rendered product page, URL filters + Zustand UI state, normalized data, virtualized list, memoized `ProductCard` | 2 h | Must |
-| 3 | Auth and forms | JWT, roles, guards, Login/Register with RHF + Zod | 1.5 h | Must |
-| 4 | Cart, checkout, orders | Redux cart, RTK Query mutations with optimistic updates, checkout form, order list | 2 h | Must |
-| 5 | Realtime core | WS server, RxJS pipeline, live order status and stock, notifications | 2 h | Must |
-| 6 | Chat | Conversations, typing, presence, unread, connection status, seller bot | 2 h | Must |
-| 7 | Seller area and legacy | Dashboard, product form, class components + Enzyme, SCSS | 2 h | Must |
-| 8 | AI assistant | Streamed mock, product cards, Styled Components widget | 1 h | Should |
-| 9 | 3D viewer | R3F viewer with controls and variants | 1 h | Should |
-| 10 | Test hardening | Integration + Playwright flows, profiler notes | 1.5 h | Must |
-| 11 | React Native client | Products, Details, Cart | 2 h | Should |
-| 12 | Polish | ADRs, README screenshots, demo script | 0.5 h | Should |
+| #   | Stage                    | Delivers                                                                                                                | Est.  | Priority |
+| --- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------- | ----- | -------- |
+| 1   | Foundation               | Monorepo, Next.js + Tailwind + Radix, shared package, Node server with seed data, Gitflow                               | 1.5 h | Must     |
+| 2   | Catalog and product page | Server-rendered product page, URL filters + Zustand UI state, normalized data, virtualized list, memoized `ProductCard` | 2 h   | Must     |
+| 3   | Auth and forms           | JWT, roles, guards, Login/Register with RHF + Zod                                                                       | 1.5 h | Must     |
+| 4   | Cart, checkout, orders   | Redux cart, RTK Query mutations with optimistic updates, checkout form, order list                                      | 2 h   | Must     |
+| 5   | Realtime core            | WS server, RxJS pipeline, live order status and stock, notifications                                                    | 2 h   | Must     |
+| 6   | Chat                     | Conversations, typing, presence, unread, connection status, seller bot                                                  | 2 h   | Must     |
+| 7   | Seller area and legacy   | Dashboard, product form, class components + Enzyme, SCSS                                                                | 2 h   | Must     |
+| 8   | AI assistant             | Streamed mock, product cards, Styled Components widget                                                                  | 1 h   | Should   |
+| 9   | 3D viewer                | R3F viewer with controls and variants                                                                                   | 1 h   | Should   |
+| 10  | Test hardening           | Integration + Playwright flows, profiler notes                                                                          | 1.5 h | Must     |
+| 11  | React Native client      | Products, Details, Cart                                                                                                 | 2 h   | Should   |
+| 12  | Polish                   | ADRs, README screenshots, demo script                                                                                   | 0.5 h | Should   |
 
 **Total ≈ 19 h.** Realistic for ~2 focused days only with a strict cut line.
 
@@ -357,14 +357,14 @@ Each stage ends with a working app, tests for the new code, and a merged PR. Est
 
 ## Known risks
 
-| Risk | Mitigation |
-|---|---|
+| Risk                                                                                                     | Mitigation                                                                                                                                         |
+| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Enzyme has no official adapter beyond React 16; community adapters for React 18/19 are thinly maintained | Keep Enzyme in its own Jest project; time-box adapter setup (~20 min); fallback: isolate the legacy area in a workspace package pinned to React 18 |
-| FSD `pages` layer clashes with Next.js `pages/` | Root `app/` for routing, placeholder root `pages/` |
-| Redux with App Router (shared global store between requests) | Store created per request in a client provider |
-| Styled Components with SSR | Used only in a client-only widget |
-| React Native inside a pnpm monorepo (Metro resolution) | Expo defaults; hoisted `node-linker` if needed |
-| 3D asset hunting eats time | Start with primitive geometry, swap to `.glb` only if time remains |
+| FSD `pages` layer clashes with Next.js `pages/`                                                          | Root `app/` for routing, placeholder root `pages/`                                                                                                 |
+| Redux with App Router (shared global store between requests)                                             | Store created per request in a client provider                                                                                                     |
+| Styled Components with SSR                                                                               | Used only in a client-only widget                                                                                                                  |
+| React Native inside a pnpm monorepo (Metro resolution)                                                   | Expo defaults; hoisted `node-linker` if needed                                                                                                     |
+| 3D asset hunting eats time                                                                               | Start with primitive geometry, swap to `.glb` only if time remains                                                                                 |
 
 ---
 
