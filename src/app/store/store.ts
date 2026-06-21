@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import { cartApi } from '@/entities/cart/api/cart-api';
 import cartReducer from '@/entities/cart/model/cart-slice';
 import { productApi } from '@/entities/product/api/product-api';
 
@@ -7,9 +8,11 @@ export const store = configureStore({
   reducer: {
     cart: cartReducer,
     [productApi.reducerPath]: productApi.reducer,
+    [cartApi.reducerPath]: cartApi.reducer,
   },
 
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(productApi.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(productApi.middleware).concat(cartApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
