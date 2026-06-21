@@ -1,4 +1,5 @@
 import { AddToCartButton } from '@/features/add-to-cart/ui/add-to-cart-button';
+import { CartSummary } from '@/widgets/cart-summary/ui/cart-summary';
 import { Badge } from '@/shared/ui/badge';
 import { Card, CardContent } from '@/shared/ui/card';
 import type { Product } from '@/entities/product/model/types';
@@ -33,6 +34,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
 
           <AddToCartButton product={product} />
+          <CartSummary />
         </CardContent>
       </div>
     </Card>
