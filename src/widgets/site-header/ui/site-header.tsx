@@ -3,7 +3,7 @@ import Link from 'next/link';
 export function SiteHeader() {
   return (
     <header className="border-b">
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
         <Link href="/" className="text-lg font-semibold">
           Marketplace
         </Link>

@@ -18,8 +18,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <main className="container mx-auto px-6 py-10">
-      <ProductDetails product={product} />
-    </main>
+    <section>
+      <div className="container mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-10">
+        <ProductDetails product={product} />
+      </div>
+    </section>
   );
 }
