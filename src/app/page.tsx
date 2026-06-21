@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { products } from '@/entities/product/model/data';
 import { ProductList } from '@/widgets/product-list/ui/product-list';
-import { Button } from '@/shared/ui/button';
+import { buttonVariants } from '@/shared/ui/button';
 
 export default function HomePage() {
   return (
@@ -22,9 +22,9 @@ export default function HomePage() {
               </p>
             </div>
 
-            <Button asChild>
-              <Link href="/products">Browse products</Link>
-            </Button>
+            <Link href="/products" className={buttonVariants()}>
+              Browse products
+            </Link>
           </div>
         </div>
       </section>
