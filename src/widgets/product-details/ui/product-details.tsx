@@ -1,3 +1,4 @@
+import { AddToCartButton } from '@/features/add-to-cart/ui/add-to-cart-button';
 import { Badge } from '@/shared/ui/badge';
 import { Card, CardContent } from '@/shared/ui/card';
 import type { Product } from '@/entities/product/model/types';
@@ -9,12 +10,12 @@ type ProductDetailsProps = {
 export function ProductDetails({ product }: ProductDetailsProps) {
   return (
     <Card className="p-3">
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-2">
         <div className="bg-muted flex aspect-square items-center justify-center rounded-xl">
           <span className="text-muted-foreground text-sm">Product image</span>
         </div>
 
-        <CardContent className="flex flex-col justify-center gap-6 p-6">
+        <CardContent className="flex flex-col justify-between gap-4.5 p-6">
           <div className="space-y-2">
             <Badge variant="secondary">{product.category}</Badge>
 
@@ -30,6 +31,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <span className="text-muted-foreground">•</span>
             <span>Stock: {product.stock}</span>
           </div>
+
+          <AddToCartButton product={product} />
         </CardContent>
       </div>
     </Card>
