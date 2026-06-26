@@ -30,7 +30,12 @@ export const cartApi = createApi({
         body,
       }),
 
-      invalidatesTags: ['Cart'],
+      // invalidatesTags: ['Cart'],
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        const { data } = await queryFulfilled;
+
+        dispatch(cartApi.util.updateQueryData('getCart', undefined, () => data));
+      },
     }),
   }),
 });
