@@ -1,9 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-type ServerCartItem = {
+type CartItem = {
   productId: string;
   title: string;
   price: number;
+  quantity: number;
+};
+
+type AddToCartRequest = {
+  productId: string;
   quantity: number;
 };
 
@@ -17,13 +22,13 @@ export const cartApi = createApi({
   tagTypes: ['Cart'],
 
   endpoints: (builder) => ({
-    getCart: builder.query<ServerCartItem[], void>({
+    getCart: builder.query<CartItem[], void>({
       query: () => '/cart',
 
       providesTags: ['Cart'],
     }),
 
-    addToCart: builder.mutation<ServerCartItem[], { productId: string; quantity: number }>({
+    addToCart: builder.mutation<CartItem[], AddToCartRequest>({
       query: (body) => ({
         url: '/cart',
         method: 'POST',
