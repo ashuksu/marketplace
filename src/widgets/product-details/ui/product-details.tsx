@@ -33,7 +33,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <span>Stock: {product.stock}</span>
           </div>
 
-          <AddToCartButton product={product} />
+          <AddToCartButton productId={product.id} />
           <CartSummary />
         </CardContent>
       </div>

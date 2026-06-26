@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import type { CartItem } from '@/entities/cart/model/cart-slice';
+type ServerCartItem = {
+  productId: string;
+  quantity: number;
+};
 
 export const cartApi = createApi({
   reducerPath: 'cartApi',
@@ -10,11 +13,11 @@ export const cartApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    getCart: builder.query<CartItem[], void>({
+    getCart: builder.query<ServerCartItem[], void>({
       query: () => '/cart',
     }),
 
-    addToCart: builder.mutation<CartItem[], { productId: string; quantity: number }>({
+    addToCart: builder.mutation<ServerCartItem[], { productId: string; quantity: number }>({
       query: (body) => ({
         url: '/cart',
         method: 'POST',

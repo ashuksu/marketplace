@@ -1,15 +1,40 @@
 'use client';
 
-import { useDispatch, useSelector } from 'react-redux';
-
-import { removeItem, updateQuantity } from '@/entities/cart/model/cart-slice';
-import type { AppDispatch, RootState } from '@/app/store/store';
+import { useGetCartQuery } from '@/entities/cart/api/cart-api';
+import { useGetProductsQuery } from '@/entities/product/api/product-api';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
 
 export function CartSummary() {
-  const dispatch = useDispatch<AppDispatch>();
-  const items = useSelector((state: RootState) => state.cart.items);
+  const {
+    data: cartItems = [],
+    isLoading: isCartLoading,
+    isError: isCartError,
+  } = useGetCartQuery();
+
+  const {
+    data: products = [],
+    isLoading: isProductsLoading,
+    isError: isProductsError,
+  } = useGetProductsQuery();
+
+  const isLoading = isCartLoading || isProductsLoading;
+  const isError = isCartError || isProductsError;
+
+  const items = cartItems.flatMap((cartItem) => {
+    const product = products.find((product) => product.id === cartItem.productId);
+
+    if (!product) {
+      return [];
+    }
+
+    return [
+      {
+        ...cartItem,
+        title: product.title,
+        price: product.price,
+      },
+    ];
+  });
 
   const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
 
@@ -20,7 +45,11 @@ export function CartSummary() {
       </CardHeader>
 
       <CardContent>
-        {items.length === 0 ? (
+        {isLoading ? (
+          <p className="text-muted-foreground text-sm">Loading cart...</p>
+        ) : isError ? (
+          <p className="text-destructive text-sm">Failed to load cart.</p>
+        ) : items.length === 0 ? (
           <p className="text-muted-foreground text-sm">Your cart is empty.</p>
         ) : (
           <div className="space-y-4">
@@ -40,59 +69,60 @@ export function CartSummary() {
                     </p>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center rounded-md border">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (item.quantity === 1) {
-                            dispatch(removeItem(item.productId));
-                            return;
-                          }
+                  <p className="font-medium">${itemTotal.toFixed(2)}</p>
+                  {/*<div className="flex flex-col items-center gap-3">*/}
+                  {/*    <div className="flex items-center rounded-md border">*/}
+                  {/*        <Button*/}
+                  {/*            variant="ghost"*/}
+                  {/*            size="icon"*/}
+                  {/*            onClick={() => {*/}
+                  {/*                if (item.quantity === 1) {*/}
+                  {/*                    dispatch(removeItem(item.productId));*/}
+                  {/*                    return;*/}
+                  {/*                }*/}
 
-                          dispatch(
-                            updateQuantity({
-                              productId: item.productId,
-                              quantity: item.quantity - 1,
-                            }),
-                          );
-                        }}
-                      >
-                        -
-                      </Button>
+                  {/*                dispatch(*/}
+                  {/*                    updateQuantity({*/}
+                  {/*                        productId: item.productId,*/}
+                  {/*                        quantity: item.quantity - 1,*/}
+                  {/*                    }),*/}
+                  {/*                );*/}
+                  {/*            }}*/}
+                  {/*        >*/}
+                  {/*            -*/}
+                  {/*        </Button>*/}
 
-                      <span className="w-8 text-center text-sm">{item.quantity}</span>
+                  {/*        <span className="w-8 text-center text-sm">{item.quantity}</span>*/}
 
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          dispatch(
-                            updateQuantity({
-                              productId: item.productId,
-                              quantity: item.quantity + 1,
-                            }),
-                          )
-                        }
-                      >
-                        +
-                      </Button>
-                    </div>
+                  {/*        <Button*/}
+                  {/*            variant="ghost"*/}
+                  {/*            size="icon"*/}
+                  {/*            onClick={() =>*/}
+                  {/*                dispatch(*/}
+                  {/*                    updateQuantity({*/}
+                  {/*                        productId: item.productId,*/}
+                  {/*                        quantity: item.quantity + 1,*/}
+                  {/*                    }),*/}
+                  {/*                )*/}
+                  {/*            }*/}
+                  {/*        >*/}
+                  {/*            +*/}
+                  {/*        </Button>*/}
+                  {/*    </div>*/}
 
-                    <div className="w-24 space-y-1 text-right">
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="text-muted-foreground h-auto cursor-pointer p-0"
-                        onClick={() => dispatch(removeItem(item.productId))}
-                      >
-                        Remove
-                      </Button>
+                  {/*    <div className="w-24 space-y-1 text-right">*/}
+                  {/*        <Button*/}
+                  {/*            variant="link"*/}
+                  {/*            size="sm"*/}
+                  {/*            className="text-muted-foreground h-auto cursor-pointer p-0"*/}
+                  {/*            onClick={() => dispatch(removeItem(item.productId))}*/}
+                  {/*        >*/}
+                  {/*            Remove*/}
+                  {/*        </Button>*/}
 
-                      <p className="font-medium">${itemTotal.toFixed(2)}</p>
-                    </div>
-                  </div>
+                  {/*        <p className="font-medium">${itemTotal.toFixed(2)}</p>*/}
+                  {/*    </div>*/}
+                  {/*</div>*/}
                 </div>
               );
             })}
@@ -103,6 +133,7 @@ export function CartSummary() {
       {items.length > 0 && (
         <CardFooter className="flex items-center justify-between border-t pt-4">
           <span className="font-medium">Total</span>
+
           <span className="text-lg font-semibold">${totalPrice.toFixed(2)}</span>
         </CardFooter>
       )}
