@@ -4,16 +4,9 @@ import { useGetCartQuery } from '@/entities/cart/api/cart-api';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 
 export function CartSummary() {
-  const {
-    data: cartItems = [],
-    isLoading: isCartLoading,
-    isError: isCartError,
-  } = useGetCartQuery();
+  const { data: items = [], isLoading, isError } = useGetCartQuery();
 
-  const isLoading = isCartLoading;
-  const isError = isCartError;
-
-  const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
 
   return (
     <Card className="w-full">
