@@ -12,9 +12,13 @@ export const cartApi = createApi({
     baseUrl: 'http://localhost:3001',
   }),
 
+  tagTypes: ['Cart'],
+
   endpoints: (builder) => ({
     getCart: builder.query<ServerCartItem[], void>({
       query: () => '/cart',
+
+      providesTags: ['Cart'],
     }),
 
     addToCart: builder.mutation<ServerCartItem[], { productId: string; quantity: number }>({
@@ -23,6 +27,8 @@ export const cartApi = createApi({
         method: 'POST',
         body,
       }),
+
+      invalidatesTags: ['Cart'],
     }),
   }),
 });
