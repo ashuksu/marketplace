@@ -15,7 +15,24 @@ app.get('/health', (_req, res) => {
 });
 
 app.get('/cart', (_req, res) => {
-  res.json(cart);
+  const cartItems = cart.flatMap((cartItem) => {
+    const product = products.find((product) => product.id === cartItem.productId);
+
+    if (!product) {
+      return [];
+    }
+
+    return [
+      {
+        productId: cartItem.productId,
+        title: product.title,
+        price: product.price,
+        quantity: cartItem.quantity,
+      },
+    ];
+  });
+
+  res.json(cartItems);
 });
 
 app.post('/cart', (req, res) => {

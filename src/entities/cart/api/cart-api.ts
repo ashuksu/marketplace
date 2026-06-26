@@ -2,6 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 type ServerCartItem = {
   productId: string;
+  title: string;
+  price: number;
   quantity: number;
 };
 
