@@ -12,6 +12,11 @@ type AddToCartRequest = {
   quantity: number;
 };
 
+type UpdateCartItemRequest = {
+  productId: string;
+  quantity: number;
+};
+
 export const cartApi = createApi({
   reducerPath: 'cartApi',
 
@@ -19,13 +24,9 @@ export const cartApi = createApi({
     baseUrl: 'http://localhost:3001',
   }),
 
-  tagTypes: ['Cart'],
-
   endpoints: (builder) => ({
     getCart: builder.query<CartItem[], void>({
       query: () => '/cart',
-
-      providesTags: ['Cart'],
     }),
 
     addToCart: builder.mutation<CartItem[], AddToCartRequest>({
@@ -35,8 +36,36 @@ export const cartApi = createApi({
         body,
       }),
 
-      // invalidatesTags: ['Cart'],
-      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        const { data } = await queryFulfilled;
+
+        dispatch(cartApi.util.updateQueryData('getCart', undefined, () => data));
+      },
+    }),
+
+    updateCartItem: builder.mutation<CartItem[], UpdateCartItemRequest>({
+      query: ({ productId, quantity }) => ({
+        url: `/cart/${productId}`,
+        method: 'PATCH',
+        body: {
+          quantity,
+        },
+      }),
+
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        const { data } = await queryFulfilled;
+
+        dispatch(cartApi.util.updateQueryData('getCart', undefined, () => data));
+      },
+    }),
+
+    removeFromCart: builder.mutation<CartItem[], string>({
+      query: (productId) => ({
+        url: `/cart/${productId}`,
+        method: 'DELETE',
+      }),
+
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         const { data } = await queryFulfilled;
 
         dispatch(cartApi.util.updateQueryData('getCart', undefined, () => data));
@@ -45,4 +74,9 @@ export const cartApi = createApi({
   }),
 });
 
-export const { useGetCartQuery, useAddToCartMutation } = cartApi;
+export const {
+  useGetCartQuery,
+  useAddToCartMutation,
+  useUpdateCartItemMutation,
+  useRemoveFromCartMutation,
+} = cartApi;
