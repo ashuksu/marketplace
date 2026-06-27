@@ -1,12 +1,44 @@
 'use client';
 
-import { useGetCartQuery } from '@/entities/cart/api/cart-api';
+import {
+  useGetCartQuery,
+  useRemoveFromCartMutation,
+  useUpdateCartItemMutation,
+} from '@/entities/cart/api/cart-api';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
 
 export function CartSummary() {
   const { data: items = [], isLoading, isError } = useGetCartQuery();
 
+  const [updateCartItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
+
+  const [removeFromCart, { isLoading: isRemoving }] = useRemoveFromCartMutation();
+
   const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  const handleDecrease = async (productId: string, quantity: number) => {
+    if (quantity === 1) {
+      await removeFromCart(productId);
+      return;
+    }
+
+    await updateCartItem({
+      productId,
+      quantity: quantity - 1,
+    });
+  };
+
+  const handleIncrease = async (productId: string, quantity: number) => {
+    await updateCartItem({
+      productId,
+      quantity: quantity + 1,
+    });
+  };
+
+  const handleRemove = async (productId: string) => {
+    await removeFromCart(productId);
+  };
 
   return (
     <Card className="w-full">
@@ -39,60 +71,45 @@ export function CartSummary() {
                     </p>
                   </div>
 
-                  <p className="font-medium">${itemTotal.toFixed(2)}</p>
-                  {/*<div className="flex flex-col items-center gap-3">*/}
-                  {/*    <div className="flex items-center rounded-md border">*/}
-                  {/*        <Button*/}
-                  {/*            variant="ghost"*/}
-                  {/*            size="icon"*/}
-                  {/*            onClick={() => {*/}
-                  {/*                if (item.quantity === 1) {*/}
-                  {/*                    dispatch(removeItem(item.productId));*/}
-                  {/*                    return;*/}
-                  {/*                }*/}
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="flex items-center rounded-md border">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDecrease(item.productId, item.quantity)}
+                        disabled={isUpdating || isRemoving}
+                        aria-label={`Decrease ${item.title} quantity`}
+                      >
+                        -
+                      </Button>
 
-                  {/*                dispatch(*/}
-                  {/*                    updateQuantity({*/}
-                  {/*                        productId: item.productId,*/}
-                  {/*                        quantity: item.quantity - 1,*/}
-                  {/*                    }),*/}
-                  {/*                );*/}
-                  {/*            }}*/}
-                  {/*        >*/}
-                  {/*            -*/}
-                  {/*        </Button>*/}
+                      <span className="w-8 text-center text-sm">{item.quantity}</span>
 
-                  {/*        <span className="w-8 text-center text-sm">{item.quantity}</span>*/}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleIncrease(item.productId, item.quantity)}
+                        disabled={isUpdating || isRemoving}
+                        aria-label={`Increase ${item.title} quantity`}
+                      >
+                        +
+                      </Button>
+                    </div>
 
-                  {/*        <Button*/}
-                  {/*            variant="ghost"*/}
-                  {/*            size="icon"*/}
-                  {/*            onClick={() =>*/}
-                  {/*                dispatch(*/}
-                  {/*                    updateQuantity({*/}
-                  {/*                        productId: item.productId,*/}
-                  {/*                        quantity: item.quantity + 1,*/}
-                  {/*                    }),*/}
-                  {/*                )*/}
-                  {/*            }*/}
-                  {/*        >*/}
-                  {/*            +*/}
-                  {/*        </Button>*/}
-                  {/*    </div>*/}
+                    <div className="w-24 space-y-1 text-right">
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-muted-foreground h-auto cursor-pointer p-0"
+                        onClick={() => handleRemove(item.productId)}
+                        disabled={isRemoving || isUpdating}
+                      >
+                        Remove
+                      </Button>
 
-                  {/*    <div className="w-24 space-y-1 text-right">*/}
-                  {/*        <Button*/}
-                  {/*            variant="link"*/}
-                  {/*            size="sm"*/}
-                  {/*            className="text-muted-foreground h-auto cursor-pointer p-0"*/}
-                  {/*            onClick={() => dispatch(removeItem(item.productId))}*/}
-                  {/*        >*/}
-                  {/*            Remove*/}
-                  {/*        </Button>*/}
-
-                  {/*        <p className="font-medium">${itemTotal.toFixed(2)}</p>*/}
-                  {/*    </div>*/}
-                  {/*</div>*/}
+                      <p className="font-medium">${itemTotal.toFixed(2)}</p>
+                    </div>
+                  </div>
                 </div>
               );
             })}
