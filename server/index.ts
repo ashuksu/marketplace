@@ -69,6 +69,47 @@ app.post('/cart', (req, res) => {
   res.status(201).json(cartItems);
 });
 
+app.patch('/cart/:id', (req, res) => {
+  const { quantity } = req.body;
+  const productId = req.params.id;
+
+  const cartItem = cart.find((item) => item.productId === productId);
+
+  if (!cartItem) {
+    res.status(404).json({
+      message: 'Cart item not found',
+    });
+    return;
+  }
+
+  if (quantity <= 0) {
+    const itemIndex = cart.findIndex((item) => item.productId === productId);
+
+    cart.splice(itemIndex, 1);
+  } else {
+    cartItem.quantity = quantity;
+  }
+
+  const cartItems = cart.flatMap((cartItem) => {
+    const product = products.find((product) => product.id === cartItem.productId);
+
+    if (!product) {
+      return [];
+    }
+
+    return [
+      {
+        productId: cartItem.productId,
+        title: product.title,
+        price: product.price,
+        quantity: cartItem.quantity,
+      },
+    ];
+  });
+
+  res.json(cartItems);
+});
+
 app.get('/products', (_req, res) => {
   res.json(products);
 });
