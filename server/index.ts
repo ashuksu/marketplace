@@ -110,6 +110,40 @@ app.patch('/cart/:id', (req, res) => {
   res.json(cartItems);
 });
 
+app.delete('/cart/:id', (req, res) => {
+  const productId = req.params.id;
+
+  const itemIndex = cart.findIndex((item) => item.productId === productId);
+
+  if (itemIndex === -1) {
+    res.status(404).json({
+      message: 'Cart item not found',
+    });
+    return;
+  }
+
+  cart.splice(itemIndex, 1);
+
+  const cartItems = cart.flatMap((cartItem) => {
+    const product = products.find((product) => product.id === cartItem.productId);
+
+    if (!product) {
+      return [];
+    }
+
+    return [
+      {
+        productId: cartItem.productId,
+        title: product.title,
+        price: product.price,
+        quantity: cartItem.quantity,
+      },
+    ];
+  });
+
+  res.json(cartItems);
+});
+
 app.get('/products', (_req, res) => {
   res.json(products);
 });
