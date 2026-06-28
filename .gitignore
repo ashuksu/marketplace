@@ -23,9 +23,9 @@
 **/next-env.d.ts
 
 # production
-/build
-/dist
-/dist-ssr
+**/build
+**/dist
+**/dist-ssr
 /gh-pages
 
 # misc
