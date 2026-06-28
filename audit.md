@@ -152,15 +152,15 @@ An earlier Redux/cart-slice architecture remains only in git history: commit his
 
 All routes are defined in `apps/api/src`; the server listens on port `3001` and allows CORS from `http://localhost:3000`.
 
-| Method | Path | Purpose | Request body | Response |
-|---|---|---|---|---|
-| GET | `/health` | Health check | None | `{ "status": "ok" }` |
-| GET | `/products` | List all seeded products | None | `Product[]` |
-| GET | `/products/:id` | Get one product | None | `Product`; `404 { message: "Product not found" }` if absent |
-| GET | `/cart` | Read current process-wide cart | None | Enriched `CartItem[]` |
-| POST | `/cart` | Add quantity for a product | `{ productId: string, quantity: number }` (not formally validated) | `201` and complete enriched `CartItem[]` |
-| PATCH | `/cart/:id` | Set quantity for a cart product | `{ quantity: number }` (not formally validated) | Complete enriched `CartItem[]`; `404 { message: "Cart item not found" }` if absent |
-| DELETE | `/cart/:id` | Remove a cart product | None | Complete enriched `CartItem[]`; `404 { message: "Cart item not found" }` if absent |
+| Method | Path            | Purpose                         | Request body                                                       | Response                                                                           |
+| ------ | --------------- | ------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| GET    | `/health`       | Health check                    | None                                                               | `{ "status": "ok" }`                                                               |
+| GET    | `/products`     | List all seeded products        | None                                                               | `Product[]`                                                                        |
+| GET    | `/products/:id` | Get one product                 | None                                                               | `Product`; `404 { message: "Product not found" }` if absent                        |
+| GET    | `/cart`         | Read current process-wide cart  | None                                                               | Enriched `CartItem[]`                                                              |
+| POST   | `/cart`         | Add quantity for a product      | `{ productId: string, quantity: number }` (not formally validated) | `201` and complete enriched `CartItem[]`                                           |
+| PATCH  | `/cart/:id`     | Set quantity for a cart product | `{ quantity: number }` (not formally validated)                    | Complete enriched `CartItem[]`; `404 { message: "Cart item not found" }` if absent |
+| DELETE | `/cart/:id`     | Remove a cart product           | None                                                               | Complete enriched `CartItem[]`; `404 { message: "Cart item not found" }` if absent |
 
 The server does not expose the README's planned auth, users, categories, orders, conversations, messages, notifications, reviews, seller, checkout, or realtime endpoints.
 

@@ -4,19 +4,22 @@ package-lock.json
 yarn.lock
 
 # Build output
-.next/
-dist/
-build/
-out/
+**/.next/
+**/dist/
+**/build/
+**/out/
 
 # Dependencies
-node_modules/
+**/node_modules/
+
+# Turborepo
+**/.turbo/
 
 # Generated
 *.min.js
 *.min.css
-next-env.d.ts
-.turbo/
+**/next-env.d.ts
+**/.turbo/
 
 # Coverage / cache
 coverage/
