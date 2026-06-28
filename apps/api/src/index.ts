@@ -1,5 +1,7 @@
+import http from 'node:http';
 import cors from 'cors';
 import express from 'express';
+import { Server } from 'socket.io';
 
 import { products } from './data/products';
 import { cart } from './data/cart';
@@ -9,6 +11,23 @@ const PORT = 3001;
 
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+  },
+});
+
+io.on('connection', (socket) => {
+  io.emit('online:count', io.engine.clientsCount);
+
+  socket.on('disconnect', () => {
+    io.emit('online:count', io.engine.clientsCount);
+  });
+});
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
@@ -161,6 +180,7 @@ app.get('/products/:id', (req, res) => {
   res.json(product);
 });
 
-app.listen(PORT, () => {
-  console.log(`API server running on http://localhost:${PORT}`);
+// Запускаем HTTP-сервер с поддержкой Socket.io вместо app.listen
+server.listen(PORT, () => {
+  console.log(`API & Socket server running on http://localhost:${PORT}`);
 });
