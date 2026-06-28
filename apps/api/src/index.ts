@@ -7,16 +7,17 @@ import { products } from './data/products';
 import { cart } from './data/cart';
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: CLIENT_URL }));
 app.use(express.json());
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: CLIENT_URL,
     methods: ['GET', 'POST'],
   },
 });
