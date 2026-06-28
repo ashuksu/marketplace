@@ -1,5 +1,7 @@
 # Marketplace
 
+> React | Next.js | Turborepo Monorepo | Node | Express | WebSockets (Socket.io) | Redux Toolkit | FSD | Tailwind CSS | shadcn/ui | CI/CD | ESlint | Prettier | Sentry | Playwright | Jest
+
 A compact full-stack marketplace built with Next.js, React and TypeScript.
 
 Users can browse products, communicate with sellers, place orders, follow order and stock updates in real time, inspect products in 3D, and use an AI shopping assistant.
