@@ -10,6 +10,25 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 
+function getFormattedCart() {
+  return cart.flatMap((cartItem) => {
+    const product = products.find((product) => product.id === cartItem.productId);
+
+    if (!product) {
+      return [];
+    }
+
+    return [
+      {
+        productId: cartItem.productId,
+        title: product.title,
+        price: product.price,
+        quantity: cartItem.quantity,
+      },
+    ];
+  });
+}
+
 app.use(cors({ origin: CLIENT_URL }));
 app.use(express.json());
 
@@ -35,29 +54,11 @@ app.get('/health', (_req, res) => {
 });
 
 app.get('/cart', (_req, res) => {
-  const cartItems = cart.flatMap((cartItem) => {
-    const product = products.find((product) => product.id === cartItem.productId);
-
-    if (!product) {
-      return [];
-    }
-
-    return [
-      {
-        productId: cartItem.productId,
-        title: product.title,
-        price: product.price,
-        quantity: cartItem.quantity,
-      },
-    ];
-  });
-
-  res.json(cartItems);
+  res.json(getFormattedCart());
 });
 
 app.post('/cart', (req, res) => {
   const { productId, quantity } = req.body;
-
   const existingItem = cart.find((item) => item.productId === productId);
 
   if (existingItem) {
@@ -69,24 +70,7 @@ app.post('/cart', (req, res) => {
     });
   }
 
-  const cartItems = cart.flatMap((cartItem) => {
-    const product = products.find((product) => product.id === cartItem.productId);
-
-    if (!product) {
-      return [];
-    }
-
-    return [
-      {
-        productId: cartItem.productId,
-        title: product.title,
-        price: product.price,
-        quantity: cartItem.quantity,
-      },
-    ];
-  });
-
-  res.status(201).json(cartItems);
+  res.status(201).json(getFormattedCart());
 });
 
 app.patch('/cart/:id', (req, res) => {
@@ -110,29 +94,11 @@ app.patch('/cart/:id', (req, res) => {
     cartItem.quantity = quantity;
   }
 
-  const cartItems = cart.flatMap((cartItem) => {
-    const product = products.find((product) => product.id === cartItem.productId);
-
-    if (!product) {
-      return [];
-    }
-
-    return [
-      {
-        productId: cartItem.productId,
-        title: product.title,
-        price: product.price,
-        quantity: cartItem.quantity,
-      },
-    ];
-  });
-
-  res.json(cartItems);
+  res.json(getFormattedCart());
 });
 
 app.delete('/cart/:id', (req, res) => {
   const productId = req.params.id;
-
   const itemIndex = cart.findIndex((item) => item.productId === productId);
 
   if (itemIndex === -1) {
@@ -144,24 +110,7 @@ app.delete('/cart/:id', (req, res) => {
 
   cart.splice(itemIndex, 1);
 
-  const cartItems = cart.flatMap((cartItem) => {
-    const product = products.find((product) => product.id === cartItem.productId);
-
-    if (!product) {
-      return [];
-    }
-
-    return [
-      {
-        productId: cartItem.productId,
-        title: product.title,
-        price: product.price,
-        quantity: cartItem.quantity,
-      },
-    ];
-  });
-
-  res.json(cartItems);
+  res.json(getFormattedCart());
 });
 
 app.get('/products', (_req, res) => {
@@ -181,7 +130,6 @@ app.get('/products/:id', (req, res) => {
   res.json(product);
 });
 
-// Запускаем HTTP-сервер с поддержкой Socket.io вместо app.listen
 server.listen(PORT, () => {
   console.log(`API & Socket server running on http://localhost:${PORT}`);
 });
