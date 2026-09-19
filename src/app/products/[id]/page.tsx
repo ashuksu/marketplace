@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { products } from '@/entities/product/model/data';
+import { getProduct } from '@/entities/product/api/get-product';
 import { ProductDetails } from '@/widgets/product-details/ui/product-details';
 
 type ProductPageProps = {
@@ -11,7 +11,7 @@ type ProductPageProps = {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = products.find((item) => item.id === id);
+  const product = await getProduct(id);
 
   if (!product) {
     notFound();

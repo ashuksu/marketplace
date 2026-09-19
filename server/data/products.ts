@@ -1,6 +1,15 @@
-import type { Product } from './types';
+export type ServerProduct = {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
+  rating: number;
+  stock: number;
+};
 
-export const products: Product[] = [
+export const products: ServerProduct[] = [
   {
     id: '1',
     title: 'Wireless Headphones',

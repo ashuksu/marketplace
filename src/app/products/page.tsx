@@ -1,7 +1,9 @@
 import { ProductList } from '@/widgets/product-list/ui/product-list';
-import { products } from '@/entities/product/model/data';
+import { getProducts } from '@/entities/product/api/get-products';
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await getProducts();
+
   return (
     <section>
       <div className="container mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-10">

@@ -1,4 +1,4 @@
-import { products } from '@/entities/product/model/data';
+import { getProducts } from '@/entities/product/api/get-products';
 import { ProductCard } from '@/entities/product/ui/product-card';
 import {
   Carousel,
@@ -8,7 +8,9 @@ import {
   CarouselPrevious,
 } from '@/shared/ui/carousel';
 
-export function FeaturedProducts() {
+export async function FeaturedProducts() {
+  const products = await getProducts();
+
   return (
     <section>
       <div className="container mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-10">
