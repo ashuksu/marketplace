@@ -1,40 +1,10 @@
 'use client';
 
 import { useGetCartQuery } from '@/entities/cart/api/cart-api';
-import { useGetProductsQuery } from '@/entities/product/api/product-api';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 
 export function CartSummary() {
-  const {
-    data: cartItems = [],
-    isLoading: isCartLoading,
-    isError: isCartError,
-  } = useGetCartQuery();
-
-  const {
-    data: products = [],
-    isLoading: isProductsLoading,
-    isError: isProductsError,
-  } = useGetProductsQuery();
-
-  const isLoading = isCartLoading || isProductsLoading;
-  const isError = isCartError || isProductsError;
-
-  const items = cartItems.flatMap((cartItem) => {
-    const product = products.find((product) => product.id === cartItem.productId);
-
-    if (!product) {
-      return [];
-    }
-
-    return [
-      {
-        ...cartItem,
-        title: product.title,
-        price: product.price,
-      },
-    ];
-  });
+  const { data: items = [], isLoading, isError } = useGetCartQuery();
 
   const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
 
