@@ -10,7 +10,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="h-full overflow-hidden">
       <Link
         href={`/products/${product.id}`}
         className="bg-muted flex aspect-square items-center justify-center"
@@ -25,7 +25,9 @@ export function ProductCard({ product }: ProductCardProps) {
             <p className="text-muted-foreground mt-1 text-sm">{product.category}</p>
           </div>
 
-          <Badge variant="secondary">{product.rating}</Badge>
+          <Badge variant="secondary" className="h-auto px-2 py-1">
+            ⭐ {product.rating}
+          </Badge>
         </div>
 
         <p className="text-muted-foreground line-clamp-2 text-sm">{product.description}</p>
@@ -33,10 +35,10 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="text-lg font-semibold">${product.price}</p>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="mt-auto p-4">
         <Link
           href={`/products/${product.id}`}
-          className="text-sm font-medium underline underline-offset-4"
+          className="text-sm font-medium underline-offset-4 hover:underline"
         >
           View product
         </Link>

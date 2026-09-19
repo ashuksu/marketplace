@@ -84,7 +84,7 @@ export function CartSummary() {
                       <Button
                         variant="link"
                         size="sm"
-                        className="text-muted-foreground h-auto p-0"
+                        className="text-muted-foreground h-auto cursor-pointer p-0"
                         onClick={() => dispatch(removeItem(item.productId))}
                       >
                         Remove

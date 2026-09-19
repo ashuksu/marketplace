@@ -1,13 +1,11 @@
-import { Button } from '@/shared/ui/button';
+import { HomeHero } from '@/widgets/home-hero/ui/home-hero';
+import { FeaturedProducts } from '@/widgets/featured-products/ui/featured-products';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <section>
-      <div className="container mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-10">
-        <div>
-          <Button>Button</Button>
-        </div>
-      </div>
-    </section>
+    <>
+      <HomeHero />
+      <FeaturedProducts />
+    </>
   );
 }
