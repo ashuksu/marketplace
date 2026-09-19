@@ -1,29 +1,25 @@
 'use client';
 
-import { useDispatch } from 'react-redux';
-
-import { addItem } from '@/entities/cart/model/cart-slice';
-import type { Product } from '@/entities/product/model/types';
-import type { AppDispatch } from '@/app/store/store';
+import { useAddToCartMutation } from '@/entities/cart/api/cart-api';
 import { Button } from '@/shared/ui/button';
 
 type AddToCartButtonProps = {
-  product: Product;
+  productId: string;
 };
 
-export function AddToCartButton({ product }: AddToCartButtonProps) {
-  const dispatch = useDispatch<AppDispatch>();
+export function AddToCartButton({ productId }: AddToCartButtonProps) {
+  const [addToCart, { isLoading }] = useAddToCartMutation();
 
-  const handleAddToCart = () => {
-    dispatch(
-      addItem({
-        productId: product.id,
-        title: product.title,
-        price: product.price,
-        quantity: 1,
-      }),
-    );
+  const handleAddToCart = async () => {
+    await addToCart({
+      productId,
+      quantity: 1,
+    });
   };
 
-  return <Button onClick={handleAddToCart}>Add to cart</Button>;
+  return (
+    <Button type="button" onClick={handleAddToCart} disabled={isLoading}>
+      {isLoading ? 'Adding...' : 'Add to cart'}
+    </Button>
+  );
 }
