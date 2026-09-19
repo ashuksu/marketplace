@@ -2,10 +2,12 @@ import { Button } from '@/shared/ui/button';
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex w-full max-w-3xl flex-1 flex-col items-center bg-white px-16 py-32 sm:items-start dark:bg-black">
-        <Button>Button</Button>
-      </main>
-    </div>
+    <section>
+      <div className="container mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-10">
+        <div>
+          <Button>Button</Button>
+        </div>
+      </div>
+    </section>
   );
 }
