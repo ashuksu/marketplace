@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { OnlineCounter } from '@/widgets/online-counter';
 
 export function SiteHeader() {
   return (
@@ -7,6 +8,8 @@ export function SiteHeader() {
         <Link href="/" className="text-lg font-semibold">
           Marketplace
         </Link>
+
+        <OnlineCounter />
 
         <nav className="flex items-center gap-6 text-sm">
           <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
